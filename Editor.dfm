@@ -11,6 +11,7 @@ object EditForm: TEditForm
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
@@ -54,6 +55,8 @@ object EditForm: TEditForm
     OnTextResultAvailable = Chromium1TextResultAvailable
     OnLoadEnd = Chromium1LoadEnd
     OnAfterCreated = Chromium1AfterCreated
+    OnBeforeClose = Chromium1BeforeClose
+    OnClose = Chromium1Close
     Left = 40
     Top = 128
   end

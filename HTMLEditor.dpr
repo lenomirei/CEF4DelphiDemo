@@ -10,7 +10,8 @@ uses
 {$R *.res}
 
 begin
-  GlobalCEFApp := TCefApplication.Create;
+  GlobalCEFApp                      := TCefApplication.Create;
+  GlobalCEFApp.DisableFeatures      := 'NetworkService';
   if GlobalCEFApp.StartMainProcess then
     begin
       Application.Initialize;
@@ -18,5 +19,5 @@ begin
       Application.Run;
     end;
 
-  GlobalCEFApp.Free;
+  DestroyGlobalCEFApp;
 end.

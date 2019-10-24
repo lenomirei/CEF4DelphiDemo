@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ToolWin, ComCtrls, ExtCtrls, uCEFChromium,
-  uCEFWinControl, uCEFWindowParent, uCEFInterfaces, ExtDlgs, Displayer, uCEFTypes;
+  uCEFWinControl, uCEFWindowParent, uCEFInterfaces, ExtDlgs, Displayer, uCEFTypes, uCEFConstants;
 
 type
   TEditForm = class(TForm)
@@ -27,6 +27,11 @@ type
     procedure ImageButtonClick(Sender: TObject);
     procedure Chromium1TextResultAvailable(Sender: TObject;
       const aText: ustring);
+    procedure Chromium1BeforeClose(Sender: TObject;
+      const browser: ICefBrowser);
+    procedure Chromium1Close(Sender: TObject; const browser: ICefBrowser;
+      var aAction: TCefCloseBrowserAction);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 
   private
     { Private declarations }
@@ -35,6 +40,7 @@ type
     FDisplayForm : TDisplayForm;
     procedure EnableDesignMode();
     procedure InsertImage(ImagePath : string);
+    procedure BrowserDestroyMsg(var aMessage : TMessage); message CEF_DESTROY;
 
   public
     { Public declarations }
@@ -133,6 +139,36 @@ begin
   // Open display form here
   FDisplayForm := TDisplayForm.Create(Self, aText);
   FDisplayForm.Show();
+end;
+
+procedure TEditForm.Chromium1BeforeClose(Sender: TObject;
+  const browser: ICefBrowser);
+begin
+  FCanClose := true;
+  PostMessage(Handle, WM_CLOSE, 0, 0);
+end;
+
+procedure TEditForm.Chromium1Close(Sender: TObject;
+  const browser: ICefBrowser; var aAction: TCefCloseBrowserAction);
+begin
+  PostMessage(Handle, CEF_DESTROY, 0, 0);
+  aAction := cbaDelay;
+end;
+
+procedure TEditForm.BrowserDestroyMsg(var aMessage : TMessage);
+begin
+  CEFWindowParent1.Free();
+end;
+
+procedure TEditForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  CanClose := FCanClose;
+  if not(FClosing) then
+  begin
+    FClosing := true;
+    Visible := false;
+    Chromium1.CloseBrowser(true);
+  end;
 end;
 
 end.
