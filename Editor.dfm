@@ -40,15 +40,6 @@ object EditForm: TEditForm
       TabOrder = 1
       OnClick = ImageButtonClick
     end
-    object SaveButton: TButton
-      Left = 150
-      Top = 2
-      Width = 75
-      Height = 22
-      Caption = 'Save'
-      TabOrder = 2
-      OnClick = SaveButtonClick
-    end
   end
   object CEFWindowParent1: TCEFWindowParent
     Left = 0
@@ -74,9 +65,5 @@ object EditForm: TEditForm
   object ImageOpenDialog: TOpenDialog
     Left = 96
     Top = 88
-  end
-  object SaveDialog1: TSaveDialog
-    Left = 96
-    Top = 128
   end
 end

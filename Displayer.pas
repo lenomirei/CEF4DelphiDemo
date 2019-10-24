@@ -58,9 +58,12 @@ begin
 end;
 
 procedure TDisplayForm.ChromiumWindowAfterCreated(Sender: TObject);
+var
+TempFilePath : string;
 begin
   Caption := '≤‚ ‘” º˛';
-  ChromiumWindow.ChromiumBrowser.LoadString(FHTMLSource);
+  TempFilePath := ExtractFilePath(Application.ExeName);
+  ChromiumWindow.ChromiumBrowser.LoadUrl(TempFilePath + 'temp.html');
 end;
 
 

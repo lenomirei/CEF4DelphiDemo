@@ -16,8 +16,6 @@ type
     Chromium1: TChromium;
     Timer1: TTimer;
     ImageOpenDialog: TOpenDialog;
-    SaveButton: TButton;
-    SaveDialog1: TSaveDialog;
     procedure SendButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -29,8 +27,7 @@ type
     procedure ImageButtonClick(Sender: TObject);
     procedure Chromium1TextResultAvailable(Sender: TObject;
       const aText: ustring);
-    procedure SaveButtonClick(Sender: TObject);
-    
+
   private
     { Private declarations }
     FCanClose : boolean;
@@ -121,26 +118,21 @@ procedure TEditForm.Chromium1TextResultAvailable(Sender: TObject;
   const aText: ustring);
 var
   TempLines : TStringList;
+  TempFilePath : string;
 begin
   // Save a temp file here
-  TempLines              := nil;
-  SaveDialog1.DefaultExt := '.html';
-  SaveDialog1.Filter     := 'HTML Files (*.html)|*.html';
+  TempLines := nil;
+  TempFilePath := ExtractFilePath(Application.ExeName);
   try
     TempLines := TStringList.Create;
     TempLines.Text := aText;
-    TempLines.SaveToFile('./temp.html');
+    TempLines.SaveToFile(TempFilePath + 'temp.html');
   finally
     if(TempLines <> nil) then FreeAndNil(TempLines);
   end;
   // Open display form here
   FDisplayForm := TDisplayForm.Create(Self, aText);
   FDisplayForm.Show();
-end;
-
-procedure TEditForm.SaveButtonClick(Sender: TObject);
-begin
-  Chromium1.RetrieveHTML();
 end;
 
 end.
