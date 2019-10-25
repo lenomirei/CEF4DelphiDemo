@@ -9,15 +9,14 @@ uses
 
 type
   TDisplayForm = class(TForm)
-    ToolBar1: TToolBar;
-    Button1: TButton;
-    Button2: TButton;
     ChromiumWindow: TChromiumWindow;
     Timer1: TTimer;
     procedure FormShow(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure ChromiumWindowAfterCreated(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure ChromiumWindowBeforeClose(Sender: TObject);
 
   private
     { Private declarations }
@@ -73,6 +72,26 @@ begin
   FCanClose := false;
   FClosing := false;
 
+end;
+
+procedure TDisplayForm.FormCloseQuery(Sender: TObject;
+  var CanClose: Boolean);
+begin
+  CanClose := FCanClose;
+
+  if not(FClosing) then
+    begin
+      FClosing := true;
+      Self.Visible := false;
+      ChromiumWindow.CloseBrowser(true);
+
+    end;
+end;
+
+procedure TDisplayForm.ChromiumWindowBeforeClose(Sender: TObject);
+begin
+  FCanClose := true;
+  PostMessage(Handle, WM_CLOSE, 0, 0);
 end;
 
 end.

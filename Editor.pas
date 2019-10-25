@@ -16,6 +16,17 @@ type
     Chromium1: TChromium;
     Timer1: TTimer;
     ImageOpenDialog: TOpenDialog;
+    SaveButton: TButton;
+    ToolBar2: TToolBar;
+    FontColorButton: TButton;
+    FontBackgroundColorButton: TButton;
+    BoldButton: TButton;
+    ItalicButton: TButton;
+    UnderlineButton: TButton;
+    StrikethroughButton: TButton;
+    UnorderedListButton: TButton;
+    OrderedListButton: TButton;
+    ColorDialog: TColorDialog;
     procedure SendButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -32,6 +43,14 @@ type
     procedure Chromium1Close(Sender: TObject; const browser: ICefBrowser;
       var aAction: TCefCloseBrowserAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FontColorButtonClick(Sender: TObject);
+    procedure FontBackgroundColorButtonClick(Sender: TObject);
+    procedure BoldButtonClick(Sender: TObject);
+    procedure ItalicButtonClick(Sender: TObject);
+    procedure UnderlineButtonClick(Sender: TObject);
+    procedure StrikethroughButtonClick(Sender: TObject);
+    procedure UnorderedListButtonClick(Sender: TObject);
+    procedure OrderedListButtonClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -41,6 +60,7 @@ type
     procedure EnableDesignMode();
     procedure InsertImage(ImagePath : string);
     procedure BrowserDestroyMsg(var aMessage : TMessage); message CEF_DESTROY;
+    procedure JavaScriptExecutor(Command : string; ShowDefaultUI : string; Argument : string);
 
   public
     { Public declarations }
@@ -115,9 +135,8 @@ procedure TEditForm.InsertImage(ImagePath : string);
 var
   TempCode : string;
 begin
-  TempCode := 'document.execCommand("insertImage", false, "' + ImagePath + '");';
-  TempCode := StringReplace(TempCode, '\', '/', [rfReplaceAll]);
-  Chromium1.ExecuteJavaScript(TempCode, 'about:blank');
+  ImagePath := StringReplace(ImagePath, '\', '/', [rfReplaceAll]);
+  JavaScriptExecutor('insertImage','false',ImagePath);
 end;
 
 procedure TEditForm.Chromium1TextResultAvailable(Sender: TObject;
@@ -169,6 +188,67 @@ begin
     Visible := false;
     Chromium1.CloseBrowser(true);
   end;
+end;
+
+procedure TEditForm.JavaScriptExecutor(Command : string; ShowDefaultUI : string; Argument : string);
+var
+  TempCode : string;
+begin
+  TempCode := 'document.execCommand("' + Command + '", ' + ShowDefaultUI + ', "' + Argument + '");';
+  Chromium1.ExecuteJavaScript(TempCode, 'about:blank');
+end;
+
+procedure TEditForm.FontColorButtonClick(Sender: TObject);
+var
+  TempHexColor : string;
+begin
+  if ColorDialog.Execute then
+    begin
+      TempHexColor := '#' + IntToHex(GetRValue(ColorDialog.Color), 2) + IntToHex(GetGValue(ColorDialog.Color), 2) + IntToHex(GetBValue(ColorDialog.Color), 2);
+      JavaScriptExecutor('foreColor', 'false', TempHexColor);
+    end;
+end;
+
+procedure TEditForm.FontBackgroundColorButtonClick(Sender: TObject);
+var
+  TempHexColor : string;
+begin
+  if ColorDialog.Execute then
+    begin
+      TempHexColor := '#' + IntToHex(GetRValue(ColorDialog.Color), 2) + IntToHex(GetGValue(ColorDialog.Color), 2) + IntToHex(GetBValue(ColorDialog.Color), 2);
+      JavaScriptExecutor('backColor', 'false', TempHexColor);
+    end;
+end;
+
+procedure TEditForm.BoldButtonClick(Sender: TObject);
+begin
+  JavaScriptExecutor('bold', 'false', 'null');
+end;
+
+
+procedure TEditForm.ItalicButtonClick(Sender: TObject);
+begin
+  JavaScriptExecutor('italic', 'false', 'null');
+end;
+
+procedure TEditForm.UnderlineButtonClick(Sender: TObject);
+begin
+  JavaScriptExecutor('underline', 'false', 'null');
+end;
+
+procedure TEditForm.StrikethroughButtonClick(Sender: TObject);
+begin
+  JavaScriptExecutor('strikeThrough', 'false', 'null');
+end;
+
+procedure TEditForm.UnorderedListButtonClick(Sender: TObject);
+begin
+  JavaScriptExecutor('insertUnorderedList', 'false', 'null');
+end;
+
+procedure TEditForm.OrderedListButtonClick(Sender: TObject);
+begin
+  JavaScriptExecutor('insertOrderedList', 'false', 'null');
 end;
 
 end.
